@@ -1,0 +1,24 @@
+service: lambda-training
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: ap-southeast-1
+  stage: test
+  iamRoleStatements:
+	  Effect: Allow
+	  Action:
+	    - lambda:InvokeFunction
+	  Resource: "*"
+
+package:
+  artifact: function.zip
+
+functions:
+  print_strings:
+    handler: handler.print_strings
+
+  cron_launcher:
+    handler: handler.cron_launcher
+    events:
+      - schedule: rate(1 minute)
