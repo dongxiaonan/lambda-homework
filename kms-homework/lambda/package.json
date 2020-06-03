@@ -1,0 +1,11 @@
+{
+  "name": "lambda-decode",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "aws-sdk": "latest"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}

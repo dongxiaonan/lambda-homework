@@ -1,0 +1,66 @@
+version: '3'
+
+services:
+  #Setup note continer
+  server:
+    build: ./server
+    expose:
+      - ${SERVERA_APP_PORT}
+    ports:
+      - 4000:8081
+    volumes:
+      - ./server:/server/app
+    command: node index.js
+    networks: 
+      - backend
+      - frontend
+
+  #Setup note continer
+  client:
+    build: ./client
+    expose:
+      - ${REACT_APP_PORT}
+    environment:
+      REACT_APP_POET: ${REACT_APP_PORT}
+    ports:
+      - ${REACT_APP_PORT}:${REACT_APP_PORT}
+    volumes:
+      - ./client/src:/client/src
+      - ./client/public:/client/public
+    command: npm run start
+    stdin_open: true
+    networks: 
+      - frontend
+
+  server-b:
+    build: ./serverB
+    expose:
+      - ${SERVERB_APP_PORT}
+    ports:
+      - ${SERVERB_APP_PORT}:${SERVERB_APP_PORT}
+    volumes:
+      - ./serverB:/serverB/app
+    depends_on: 
+      - db
+    command: node index.js
+    networks: 
+      - backend
+
+  db:
+    build: ./db
+    networks: 
+      - backend
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks: 
+      - backend
+
+networks: 
+  frontend:
+  backend:
+
+  

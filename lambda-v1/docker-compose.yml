@@ -1,0 +1,10 @@
+version: "3.4"
+
+services: 
+    serverless:
+        image: softinstigate/serverless
+        command: deploy -v
+        volumes: 
+            - "./:/app"
+            - "~/.aws/:/root/.aws"
+        working_dir: /app

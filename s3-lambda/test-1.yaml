@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Resources:
+  ExecutionTestRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: "test-xndong-role"
+      AssumeRolePolicyDocument: 
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com" 
+            Action: 
+              - "sts:AssumeRole"
+      Policies:
+        -
+          PolicyName: "test-xndong-role-policy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action: !Join [ ":", ["s3:GetObject"] ]
+                Resource: "arn:aws:s3:::*"
+
+  ExecutionLambdaFunction: 
+    Type: "AWS::Lambda::Function"
+    Properties: 
+      Handler: "index.handler"
+      Role: 
+        Fn::GetAtt: 
+          - "ExecutionTestRole"
+          - "Arn"
+      Code: 
+        S3Bucket: "xndong-cache-service"
+        S3Key: "function"
+      Runtime: "nodejs12.x"
+
+  S3Bucket:
+    Type: AWS::S3::Bucket
+
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      PolicyDocument:
+        Id: MyPolicy
+        Version: 2012-10-17
+        Statement:
+          - Sid: PublicReadForGetBucketObjects
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Join 
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref S3Bucket
+                - /*
+      Bucket: !Ref S3Bucket
